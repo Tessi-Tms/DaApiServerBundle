@@ -18,7 +18,7 @@ services:
     da_api_server.security.authentication.listener.api:
         class: %da_api_server.security.authentication.listener.api.class%
         public: false
-        arguments: ["@security.context", "@security.authentication.manager"]
+        arguments: ["security.token_storage", "@security.authentication.manager"]
 
     da_api_server.security.authentication.provider.oauth:
         class: %da_api_server.security.authentication.provider.oauth.class%

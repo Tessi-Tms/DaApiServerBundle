@@ -15,9 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Da\ApiServerBundle\Security\Authentication\Token\ApiToken;
 use Da\AuthCommonBundle\Exception\ApiTokenNotFoundException;
@@ -30,11 +30,11 @@ use Da\AuthCommonBundle\Exception\ApiTokenNotFoundException;
 class ApiAuthListener implements ListenerInterface
 {
     /**
-     * The security context.
+     * The token storage.
      *
-     * @var SecurityContextInterface
+     * @var TokenStorageInterface
      */
-    protected $securityContext;
+    protected $tokenStorage;
 
     /**
      * The authentication manager.
@@ -44,12 +44,12 @@ class ApiAuthListener implements ListenerInterface
     protected $authenticationManager;
 
     /**
-     * @param SecurityContextInterface       $securityContext       The security context.
+     * @param TokenStorageInterface       $tokenStorage       The security context.
      * @param AuthenticationManagerInterface $authenticationManager The authentication manager.
      */
-    public function __construct(SecurityContextInterface $securityContext, AuthenticationManagerInterface $authenticationManager)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager)
     {
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
     }
 
@@ -65,7 +65,7 @@ class ApiAuthListener implements ListenerInterface
 
             $token = new ApiToken();
             $token->setToken($apiToken);
-        
+
             $returnValue = $this->authenticationManager->authenticate($token);
 
             if ($returnValue instanceof TokenInterface) {
